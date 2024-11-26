@@ -16,6 +16,8 @@ my $label;
 my $patch_path;
 my $patch_file;
 my $check_file_exists;
+my $string_match;
+my $string_new;
 
 my $whitespace;
 my @array;
@@ -61,7 +63,8 @@ sub get_file_exists {
         return 1;
     }
     else {
-        print "File does not exist at: $file_path\nSkipping...\n" return;
+        print "File does not exist at: $file_path\nSkipping...\n";
+        return;
     }
 }
 
@@ -260,69 +263,69 @@ sub patch_from_file_array {
 # PHYS/MAKEFILE - add coupler
 my $coupler_file = "${input_dir}phys/Makefile";
 $check_file_exists = get_file_exists($coupler_file);
-  if ($check_file_exists) {
-    my $coupler_match = "module_sf_noahmp_glacier.o \\";
-    my $coupler_new   = "\tmodule_sf_COSIPY.o ";
-    add_line_to_file( $coupler_file, $coupler_match, $coupler_new, 'a' );
+if ($check_file_exists) {
+    $string_match = "module_sf_noahmp_glacier.o \\";
+    $string_new   = "\tmodule_sf_COSIPY.o ";
+    add_line_to_file( $coupler_file, $string_match, $string_new, 'a' );
 }
 
 # PATCH MODULE SURFACE DRIVER
 my $driver_file = "${input_dir}phys/module_surface_driver.F";
 $check_file_exists = get_file_exists($driver_file);
-  if ($check_file_exists) {
-    my $driver_match =
+if ($check_file_exists) {
+    $string_match =
       "!  This driver calls subroutines for the surface parameterizations.";
 
     # my $driver_match = "parameterizations.";
-    $patch_path = "${patch_dir}module_surface_driver.F";
+    $patch_file = "${patch_dir}module_surface_driver.F";
     $label      = set_patch_label( "!", 1 );
 
-    my $driver_new = "${label}   USE cosipy_wrf, ONLY: glacier_mass_balance\n";
-    add_line_to_file( $driver_file, $driver_match, $driver_new, "p" );
+    $string_new = "${label}   USE cosipy_wrf, ONLY: glacier_mass_balance\n";
+    add_line_to_file( $driver_file, $string_match, $string_new, "p" );
 
-    $driver_match = "! variables below are optional";
+    $string_match = "! variables below are optional";
     $whitespace   = " " x 15;
-    $driver_new   = "${label}${whitespace}run_cspy, &";
-    add_line_to_file( $driver_file, $driver_match, $driver_new, "p" );
+    $string_new   = "${label}${whitespace}run_cspy, &";
+    add_line_to_file( $driver_file, $string_match, $string_new, "p" );
 
-    $driver_match =
+    $string_match =
 "     &          ,ua_phys,flx4,fvb,fbur,fgsn                                  &
 ";
-    patch_from_file_array( $driver_file, $patch_path, $driver_match, 1, "a" );
-    $driver_match = "! Variables for multi-layer UCM";
-    patch_from_file_array( $driver_file, $patch_path, $driver_match, 2, "p" );
-    $driver_match = "!jref: sfc diagnostics\n";
-    patch_from_file_array( $driver_file, $patch_path, $driver_match, 3, "p" );
+    patch_from_file_array( $driver_file, $patch_file, $string_match, 1, "a" );
+    $string_match = "! Variables for multi-layer UCM";
+    patch_from_file_array( $driver_file, $patch_file, $string_match, 2, "p" );
+    $string_match = "!jref: sfc diagnostics\n";
+    patch_from_file_array( $driver_file, $patch_file, $string_match, 3, "p" );
 }
 
 # PATCH NOAHMP DRIVER
 $driver_file = "${input_dir}phys/noahmp/drivers/wrf/module_sf_noahmpdrv.F";
 $check_file_exists = get_file_exists($driver_file);
-  if (check_file_exists) {
-    $driver_match = "!Optional Detailed Precipitation Partitioning Inputs";
+if ($check_file_exists) {
+    $string_match = "!Optional Detailed Precipitation Partitioning Inputs";
     $label        = set_patch_label( "!", 1 );
-    $driver_new =
+    $string_new =
 "${label}    INTEGER, INTENT(IN) :: run_cspy\t\t!COSIPY call: 0=not called; 1=offline; 2=interactive/bypass NOAHMP_GLACIER\n";
-    add_line_to_file( $driver_file, $driver_match, $driver_new, "p" );
+    add_line_to_file( $driver_file, $string_match, $string_new, "p" );
 
-    $driver_match = "its,ite,  jts,jte,  kts,kte,";
+    $string_match = "its,ite,  jts,jte,  kts,kte,";
     $whitespace   = " " x 15;
-    $driver_new   = "${whitespace}${label}${whitespace}run_cspy, &";
-    add_line_to_file( $driver_file, $driver_match, $driver_new, "a" );
+    $string_new   = "${whitespace}${label}${whitespace}run_cspy, &";
+    add_line_to_file( $driver_file, $string_match, $string_new, "a" );
 
-    $driver_match =
+    $string_match =
 "CALL NOAHMP_OPTIONS_GLACIER(IOPT_ALB  ,IOPT_SNF  ,IOPT_TBOT, IOPT_STC, IOPT_GLA )";
     $whitespace = " " x 5;
-    $driver_new = "${whitespace}${label}${whitespace}IF(run_cspy .LT. 2)THEN";
-    add_line_to_file( $driver_file, $driver_match, $driver_new, "a" );
+    $string_new = "${whitespace}${label}${whitespace}IF(run_cspy .LT. 2)THEN";
+    add_line_to_file( $driver_file, $string_match, $string_new, "a" );
 
     $patch_file   = "${patch_dir}module_sf_noahmpdrv.F";
-    $driver_match = "FSNO   = 1.0";
-    patch_from_file_array( $driver_file, $patch_file, $driver_match, 1, "p" );
+    $string_match = "FSNO   = 1.0";
+    patch_from_file_array( $driver_file, $patch_file, $string_match, 1, "p" );
 
-    $driver_match = "         QFX(I,J) = ESOIL";
-    $driver_new   = "IF(run_cspy .LT. 2) Z0WRF  = 0.002	${label}";
-    add_line_to_file( $driver_file, $driver_match, $driver_new, "p" );
+    $string_match = "         QFX(I,J) = ESOIL";
+    $string_new   = "IF(run_cspy .LT. 2) Z0WRF  = 0.002	${label}";
+    add_line_to_file( $driver_file, $string_match, $string_new, "p" );
 }
 {
     print
@@ -333,63 +336,61 @@ $check_file_exists = get_file_exists($driver_file);
 my $namelist_file = "${input_dir}run/namelist.input";
 $check_file_exists = get_file_exists($namelist_file);
 if ($check_file_exists) {
-    my $namelist_match = " &dynamics";
-    my $namelist_new =
-      " &cosipy\n max_cspy_layers = 200,\n run_cspy = 0, 1,\n \\\n";
-    add_line_to_file( $namelist_file, $namelist_match, $namelist_new, "p" );
+    $string_match = " &dynamics";
+    $string_new = " &cosipy\n max_cspy_layers = 200,\n run_cspy = 0, 1,\n \\\n";
+    add_line_to_file( $namelist_file, $string_match, $string_new, "p" );
 }
 
 # PATCH REGISTRY
 my $dimspec_file = "${input_dir}Registry/registry.dimspec";
 $check_file_exists = get_file_exists($dimspec_file);
 if ($check_file_exists) {
-    my $dimspec_match = "ifdef DA_CORE=0";
-    $label = set_patch_label();
-    my $dimspec_new =
+    $string_match = "ifdef DA_CORE=0";
+    $label        = set_patch_label();
+    $string_new =
       "${label}dimspec cspylay 2 namelist=max_cspy_layers z cspy_layers\n";
-    add_line_to_file( $dimspec_file, $dimspec_match, $dimspec_new, "p" );
+    add_line_to_file( $dimspec_file, $string_match, $string_new, "p" );
 }
 
 my $em_common_file = "${input_dir}Registry/Registry.EM_COMMON";
 $check_file_exists = get_file_exists($em_common_file);
 if ($check_file_exists) {
-    my $em_common_patch = "${patch_dir}Registry.EM_COMMON";
-    my $em_common_match = "# DFI variables";
-    $label = set_patch_label();
-    patch_from_file_array( $em_common_file, $em_common_patch, $em_common_match,
-        1, "p" );
-    $em_common_match =
+    $patch_file   = "${patch_dir}Registry.EM_COMMON";
+    $string_match = "# DFI variables";
+    $label        = set_patch_label();
+    patch_from_file_array( $em_common_file, $patch_file, $string_match, 1,
+        "p" );
+    $string_match =
 "rconfig   integer     sf_surface_physics  namelist,physics	max_domains    -1      rh       \"sf_surface_physics\"            \"\"      \"\"";
-    patch_from_file_array( $em_common_file, $em_common_patch, $em_common_match,
-        1, "p" );
+    patch_from_file_array( $em_common_file, $patch_file, $string_match, 1,
+        "p" );
 }
 
 # PATCH DYN_EM - module_first_rk_step_part1
-$patch_path = "${patch_dir}module_first_rk_step_part1.F";
 my $first_rk_part1_file = "${input_dir}dyn_em/module_first_rk_step_part1.F";
 $check_file_exists = get_file_exists($first_rk_part1_file);
 if ($check_file_exists) {
-    my $first_rk_part1_match =
+    $patch_file = "${patch_dir}module_first_rk_step_part1.F";
+    $string_match =
       "    USE module_configure, ONLY : grid_config_rec_type, model_config_rec";
     $label      = set_patch_label("!");
     $whitespace = " " x 4;
-    my $first_rk_part1_new =
+    $string_new =
       "\n${label}${whitespace}USE module_domain_type, ONLY : HISTORY_ALARM\n";
-    add_line_to_file( $first_rk_part1_file, $first_rk_part1_match,
-        $first_rk_part1_new, "p" );
-    $first_rk_part1_match =
+    add_line_to_file( $first_rk_part1_file, $string_match, $string_new, "p" );
+    $string_match =
       "    INTEGER, INTENT(IN) :: ids, ide, jds, jde, kds, kde,     &";
-    patch_from_file_array( $first_rk_part1_file, $patch_path,
-        $first_rk_part1_match, 1, "p" );
-    $first_rk_part1_match = "      CALL surface_driver";
-    patch_from_file_array( $first_rk_part1_file, $patch_path,
-        $first_rk_part1_match, 2, "p" );
-    $first_rk_part1_match = "     &        ,fbur=grid%fbur,fgsn=grid%fgsn";
-    patch_from_file_array( $first_rk_part1_file, $patch_path,
-        $first_rk_part1_match, 3, "a" );
+    patch_from_file_array( $first_rk_part1_file, $patch_file,
+        $string_match, 1, "p" );
+    $string_match = "      CALL surface_driver";
+    patch_from_file_array( $first_rk_part1_file, $patch_file,
+        $string_match, 2, "p" );
+    $string_match = "     &        ,fbur=grid%fbur,fgsn=grid%fgsn";
+    patch_from_file_array( $first_rk_part1_file, $patch_file,
+        $string_match, 3, "a" );
 }
 
 # COPY COSIPY MODULE
-$patch_path = "${patch_dir}module_sf_COSIPY.F";
+$patch_file = "${patch_dir}module_sf_COSIPY.F";
 my $target_path = "${input_dir}phys/module_sf_COSIPY.F";
-copy( "${patch_path}", "${target_path}" ) or die "Copy failed: $!";
+copy( "${patch_file}", "${target_path}" ) or die "Copy failed: $!";
