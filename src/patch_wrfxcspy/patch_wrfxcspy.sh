@@ -144,7 +144,7 @@ fi
 if [[ $INSTALL_COUPLER -eq 1 ]]; then
     log "Install coupler"
     mkdir -p "${INPUT}/COUPLER/"
-    cp -r "${PWD}/COUPLER/" "${INPUT}/COUPLER/"
+    cp -r "${PWD}/patch_files/COUPLER/" "${INPUT}/COUPLER/"
 fi
 
 # Paths must be edited by user

@@ -69,9 +69,9 @@ sub open_file {
     my $input_file = $_[0];
     rename( $input_file, $input_file . '.bak' );
     open my $in, '+<', "$input_file.bak"
-      or die "Can't read file at:$input_file\n$!";
+      or die "Can't read file at: $input_file\n$!";
     open my $out, '+>', "$input_file"
-      or die "Can't read file at:$input_file\n$!";
+      or die "Can't read file at: $input_file\n$!";
 
     return ( $in, $out );
 }
@@ -259,7 +259,7 @@ sub patch_from_file_array {
 
 # PHYS/MAKEFILE - add coupler
 my $coupler_file = "${input_dir}phys/Makefile";
-$check_file_exists = get_file_exists($coupler_file)
+$check_file_exists = get_file_exists($coupler_file);
   if ($check_file_exists) {
     my $coupler_match = "module_sf_noahmp_glacier.o \\";
     my $coupler_new   = "\tmodule_sf_COSIPY.o ";
@@ -268,7 +268,7 @@ $check_file_exists = get_file_exists($coupler_file)
 
 # PATCH MODULE SURFACE DRIVER
 my $driver_file = "${input_dir}phys/module_surface_driver.F";
-$check_file_exists = get_file_exists($driver_file)
+$check_file_exists = get_file_exists($driver_file);
   if ($check_file_exists) {
     my $driver_match =
       "!  This driver calls subroutines for the surface parameterizations.";
@@ -297,7 +297,7 @@ $check_file_exists = get_file_exists($driver_file)
 
 # PATCH NOAHMP DRIVER
 $driver_file = "${input_dir}phys/noahmp/drivers/wrf/module_sf_noahmpdrv.F";
-$check_file_exists = get_file_exists($driver_file)
+$check_file_exists = get_file_exists($driver_file);
   if (check_file_exists) {
     $driver_match = "!Optional Detailed Precipitation Partitioning Inputs";
     $label        = set_patch_label( "!", 1 );
