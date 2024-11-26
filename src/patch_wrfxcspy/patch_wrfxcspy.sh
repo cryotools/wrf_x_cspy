@@ -46,7 +46,7 @@ log() {
 }
 
 # Argument parsing
-ARGS=$(getopt -o 'hi:cdpev' --long 'help,input:,clean,delete,patch,env,verbose,install-all,install-wrf,install-cosipy,install-coupler,wrf-branch' -- "$@") || exit
+ARGS=$(getopt -o 'hi:cdpev' --long 'help,input:,clean,delete,patch,env,verbose,install-all,install-wrf,install-cosipy,install-coupler,wrf-branch:' -- "$@") || exit
 eval "set -- $ARGS"
 while true; do
     case $1 in
@@ -128,6 +128,7 @@ readonly DELETE
 readonly ENVIRONMENT
 readonly VERBOSE
 readonly INPUT
+readonly WRF_BRANCH
 
 # Get WRF, COSIPY
 if [[ $INSTALL_COSIPY -eq 1 ]]; then
