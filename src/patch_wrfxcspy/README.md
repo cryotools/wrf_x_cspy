@@ -45,7 +45,6 @@ Depending on your system and access permissions, you may need to run ``build_wrf
 --install-wrf       Download only WRF and NoahMP drivers. This will not build WRF for you.
 --install-cosipy    Download only COSIPY.
 --install-coupler   Install only the coupler code.
---install-noahmp    Download NoahMP drivers.
 --wrf-branch <str>  Name of WRF branch on GitHub. Defaults to 'release-v4.6.1'.
 -c, --configure     Create new WRF configuration script.
 -p, --patch         Patch COSIPY into WRF. Does not check if already patched!
