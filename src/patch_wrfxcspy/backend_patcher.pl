@@ -327,9 +327,9 @@ if ($check_file_exists) {
     $string_new   = "IF(run_cspy .LT. 2) Z0WRF  = 0.002	${label}";
     add_line_to_file( $driver_file, $string_match, $string_new, "p" );
 }
-{
+else {
     print
-"Missing NoahMP submodule. Use the --install-noahmp flag or download the drivers."
+"Missing NoahMP submodule. Use the --install-noahmp flag or download the drivers.";
 }
 
 # PATCH RUN
