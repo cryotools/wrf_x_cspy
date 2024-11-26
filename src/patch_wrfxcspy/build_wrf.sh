@@ -9,7 +9,7 @@ USER_PATH="/home/atuin/<group>/<account>/software"
 module purge
 module load hdf5/1.10.7-impi-intel netcdf-c netcdf-fortran/4.5.3-intel gcc/9.4.0 cmake
 module load mkl/2022.1.0 m4/1.4.19
-module load user-spack/0.18.0
+module load user-spack
 module load time
 
 # Coupler
