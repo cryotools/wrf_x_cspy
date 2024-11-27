@@ -15,7 +15,7 @@ my $user_arguments = GetOptions( "input=s" => \$input_dir );
 my $label;
 my $patch_path;
 my $patch_file;
-my $check_file_exists;
+my $check_file;
 my $string_match;
 my $string_new;
 
@@ -55,6 +55,19 @@ sub set_label_wrap {
     $text = "${label_start}${text}${label_end}";
     return $text;
 
+}
+
+sub get_file_is_safe {
+    my ( $input_file, $label ) = @_;
+    $label ||= "\\!WRF_X_CSPY";
+    my $file_exists = get_file_exists($input_file);
+    if ($file_exists) {
+        my $file_patched = get_file_is_patched( $input_file, $label );
+        if ($file_patched) {
+            return 1;
+        }
+    }
+    return;
 }
 
 sub get_file_exists {
@@ -300,9 +313,8 @@ sub patch_from_file_array {
 
 # PHYS/MAKEFILE - add coupler
 my $coupler_file = "${input_dir}phys/Makefile";
-$check_file_exists = get_file_exists($coupler_file);
-if ($check_file_exists) {
-
+$check_file = get_file_is_safe($coupler_file);
+if ($check_file) {
     $string_match = "module_sf_noahmp_glacier.o \\";
     $string_new   = "\tmodule_sf_COSIPY.o ";
     add_line_to_file( $coupler_file, $string_match, $string_new, 'a' );
@@ -310,8 +322,8 @@ if ($check_file_exists) {
 
 # PATCH MODULE SURFACE DRIVER
 my $driver_file = "${input_dir}phys/module_surface_driver.F";
-$check_file_exists = get_file_exists($driver_file);
-if ($check_file_exists) {
+$check_file = get_file_is_safe($driver_file);
+if ($check_file) {
     copy_file($driver_file);
     $string_match =
       "\\!  This driver calls subroutines for the surface parameterizations\.";
@@ -342,8 +354,8 @@ if ($check_file_exists) {
 
 # PATCH NOAHMP DRIVER
 $driver_file = "${input_dir}phys/noahmp/drivers/wrf/module_sf_noahmpdrv.F";
-$check_file_exists = get_file_exists($driver_file);
-if ($check_file_exists) {
+$check_file  = get_file_is_safe($driver_file);
+if ($check_file) {
     copy_file($driver_file);
     $string_match = "!Optional Detailed Precipitation Partitioning Inputs";
     $label        = set_patch_label( "!", 1 );
@@ -382,18 +394,18 @@ else {
 
 # PATCH RUN
 my $namelist_file = "${input_dir}run/namelist.input";
-$check_file_exists = get_file_exists($namelist_file);
-if ($check_file_exists) {
+$check_file = get_file_is_safe( $namelist_file, " \&cosipy" );
+if ($check_file) {
     copy_file($namelist_file);
     $string_match = " &dynamics";
-    $string_new = " &cosipy\n max_cspy_layers = 200,\n run_cspy = 0, 1,\n \\\n";
+    $string_new = " &cosipy\n max_cspy_layers = 200,\n run_cspy = 0, 1,\n \/\n";
     add_line_to_file( $namelist_file, $string_match, $string_new, "p" );
 }
 
 # PATCH REGISTRY
 my $dimspec_file = "${input_dir}Registry/registry.dimspec";
-$check_file_exists = get_file_exists($dimspec_file);
-if ($check_file_exists) {
+$check_file = get_file_is_safe($dimspec_file);
+if ($check_file) {
     copy_file($dimspec_file);
     $string_match = "ifdef DA_CORE=0";
     $label        = set_patch_label();
@@ -403,8 +415,8 @@ if ($check_file_exists) {
 }
 
 my $em_common_file = "${input_dir}Registry/Registry.EM_COMMON";
-$check_file_exists = get_file_exists($em_common_file);
-if ($check_file_exists) {
+$check_file = get_file_is_safe($em_common_file);
+if ($check_file) {
     copy_file($em_common_file);
     $patch_file   = "${patch_dir}Registry.EM_COMMON";
     $string_match = "# DFI variables";
@@ -419,8 +431,8 @@ if ($check_file_exists) {
 
 # PATCH DYN_EM - module_first_rk_step_part1
 my $first_rk_part1_file = "${input_dir}dyn_em/module_first_rk_step_part1.F";
-$check_file_exists = get_file_exists($first_rk_part1_file);
-if ($check_file_exists) {
+$check_file = get_file_is_safe($first_rk_part1_file);
+if ($check_file) {
     copy_file($first_rk_part1_file);
     $patch_file = "${patch_dir}module_first_rk_step_part1.F";
     $string_match =
