@@ -26,7 +26,7 @@ DisplayHelp() {
     --wrf-branch <str>      Name of WRF branch on GitHub. Defaults to 'release-v4.6.1'.
     -c, --configure         Create new WRF configuration script.
     -d, --delete            Run make clean in source directory.
-    -p, --patch             Patch COSIPY into WRF. Does not check if already patched!
+    -p, --patch             Patch COSIPY into WRF.
     -e, --env               Load environment variables.
     -v, --verbose           Prints log messages to stderr.
     "
