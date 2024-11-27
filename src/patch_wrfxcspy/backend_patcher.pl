@@ -38,7 +38,7 @@ sub set_patch_label {
     my $label = "${prefix}WRF_X_CSPY";
     if ( $year == 1 ) {
         $year  = get_year();
-        $label = "${label} EC${year}\n";
+        $label = "${label} ${year}\n";
     }
     else {
         $label = "${label}\n";
@@ -57,12 +57,52 @@ sub set_label_wrap {
 
 }
 
+=head2 I<File Handling>
+
+=over
+
+=item get_file_is_safe($input_file, $patch_label)
+
+Check if a file exists and has been patched.
+
+Parameters:
+
+=over
+
+=item path to file
+
+=item patch label. If this is found anywhere in the file, it is considered patched.
+
+=back
+
+=item get_file_exists($input_file)
+
+Check a file exists.
+
+=item get_file_is_patched($input_file, $patch_label)
+
+Check if a file has been patched.
+
+Parameters:
+
+=over
+
+=item path to file
+
+=item patch label. If this is found anywhere in the file, it is considered patched.
+
+=back
+
+=back
+
+=cut
+
 sub get_file_is_safe {
-    my ( $input_file, $label ) = @_;
-    $label ||= "\\!WRF_X_CSPY";
+    my ( $input_file, $patch_label ) = @_;
+    $patch_label ||= "\\!WRF_X_CSPY";
     my $file_exists = get_file_exists($input_file);
     if ($file_exists) {
-        my $file_patched = get_file_is_patched( $input_file, $label );
+        my $file_patched = get_file_is_patched( $input_file, $patch_label );
         if ($file_patched) {
             return 1;
         }
@@ -115,11 +155,15 @@ sub open_file {
 
 =item regex_prepend_to_line($match_string, $new_text)
 
-Prepends missing text before matching string.
+Prepends new text before matching string.
 
 =item regex_append_to_line($match_string, $new_text)
 
-Appends missing text after matching string.
+Appends new text after matching string.
+
+=item regex_replace_line($match_string, $new_text)
+
+Replaces matching string with new text.
 
 =back
 
@@ -175,15 +219,16 @@ Parameters:
 
 =item string to match
 
-=item missing text
+=item new text
 
-=item edit mode: 'p' -> prepend, 'a' -> append, 'n' -> prepend by n lines.
+=item edit mode: 'p' -> prepend, 'a' -> append, 'r' -> replace line.
 
 =back
 
-=item patch_from_file($file_path, $patch_path, $match_string, $mode)
+=item patch_from_file_array($file_path, $patch_path, $match_string, $mode)
 
 Patches text from another file.
+Hunks in the patch file must be separated with "===N===", where N is an index.
 
 Parameters:
 
@@ -195,7 +240,7 @@ Parameters:
 
 =item string to match
 
-=item edit mode: 'p' -> prepend, 'a' -> append, 'n' -> prepend by n lines.
+=item edit mode: 'p' -> prepend, 'a' -> append, 'r' -> replace line.
 
 =back
 
@@ -209,9 +254,6 @@ sub add_line_to_file {
     while (<$in>) {
         if ( $mode eq "p" ) {
             regex_prepend_to_line( $match_string, $new_text );
-        }
-        elsif ( $mode eq "n" ) {
-            regex_prepend_to_line_number( $match_string, $new_text );
         }
         elsif ( $mode eq "a" ) {
             regex_append_to_line( $match_string, $new_text );
@@ -227,30 +269,6 @@ sub add_line_to_file {
     }
     close $in;
     close $out;
-}
-
-sub patch_from_file {
-    my ( $file_path, $patch_path, $match_string, $mode ) = @_;
-    my ( $in, $out ) = open_file($file_path);
-    my $patch_text = path($patch_path)->slurp;
-    $patch_text = set_label_wrap( $patch_text, "#" );
-    while (<$in>) {
-        if ( $mode eq "p" ) {
-            regex_prepend_to_line( $match_string, $patch_text );
-        }
-        elsif ( $mode eq "a" ) {
-            regex_append_to_line( $match_string, $patch_text );
-        }
-        else {
-            die "Mode $! not supported.";
-        }
-
-        print $out $_;
-    }
-
-    # }
-    close $out;
-    close $patch_text;
 }
 
 sub patch_from_file_array {
@@ -269,6 +287,9 @@ sub patch_from_file_array {
         }
         elsif ( $mode eq "a" ) {
             regex_append_to_line( $match_string, $patch_text );
+        }
+        elsif ( $mode eq "r" ) {
+            regex_replace_line( $match_string, $new_text );
         }
         else {
             die "Mode $! not supported.";
@@ -292,7 +313,7 @@ sub patch_from_file_array {
 # path to a patch file.
 
 # You can add individual lines to a file.
-# Use "a" for append or "p" for prepend.
+# Use "a" for append, "p" for prepend, or "r" to replace.
 
 # my $file  = "${input_dir}foo/bar";
 # my $string_match = "happy birthday";
@@ -301,7 +322,7 @@ sub patch_from_file_array {
 
 # You can patch hunks from files in the patch_files directory.
 # Hunks must be separated with "===N===", where N is an index.
-# Use "a" for append or "p" for prepend.
+# Use "a" for append, "p" for prepend, or "r" to replace.
 
 # my $file  = "${input_dir}foo/bar";
 # my $patch_file = "${patch_dir}bar";

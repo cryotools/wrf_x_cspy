@@ -4,7 +4,7 @@ All-in-one coupler for [COSIPY](https://cosipy.readthedocs.io) and WRF.
 
 ## Pre-requisites
 
-1. Install patcher dependencies
+1. Install patcher dependencies.
 
 Perl version 5.26.3 or greater must be installed on your system. Depending on your distribution, you may also need to install the following:
 
@@ -47,7 +47,63 @@ Depending on your system and access permissions, you may need to run ``build_wrf
 --install-coupler   Install only the coupler code.
 --wrf-branch <str>  Name of WRF branch on GitHub. Defaults to 'release-v4.6.1'.
 -c, --configure     Create new WRF configuration script.
--p, --patch         Patch COSIPY into WRF. Does not check if already patched!
+-p, --patch         Patch COSIPY into WRF.
 -e, --env           Load environment variables.
 -v, --verbose       Prints log messages to stderr.
 ```
+
+## Adding Patches
+
+You can also view this documentation by running ``perldoc backend_patcher.pl``.
+
+Patching a file in ``backend_patcher.pl`` always follows the same template.
+Note that brackets in the string being matched must be escaped with ``\\``.
+
+```perl
+my $input_file = "${input_dir}path/to/file";
+$check_file = get_file_is_safe($input_file); # file exists and isn't patched
+if ($check_file) {
+    copy_file($input_file); # backup original file
+    $string_match = "happy birthday"; # whitespace-sensitive
+    $label        = set_patch_label();  # if you want to include a signature
+    $whitespace = " " x 5 # if you want to include whitespace
+    # patch method goes here
+}
+```
+
+### Add a line
+
+You can add individual lines by hardcoding the script:
+
+```perl
+$string_match = "happy birthday"; # whitespace-sensitive
+$string_new = "${label}${whitespace}to you!\nhappy birthday";
+add_line_to_file( $input_file, $string_match, $string_new, "p" );
+```
+``add_line_to_file`` takes three modes: "p" (prepend), "a" (append), "r" (replace).
+
+### Add from patch file
+
+For more complex patching, add a file with an identical name to the one you wish to patch under ``./patch_files``.
+Separate hunks using ``===N===``, where N is an index.
+
+```
+===1===
+some string
+and another
+===1===
+===2===
+a second paragraph
+    with whitespace
+===2===
+```
+
+Use the index number to refer directly to the hunk you wish to add:
+
+```perl
+$patch_file = "${patch_dir}file";
+$string_match = "some string"; # whitespace-sensitive
+patch_from_file_array( $input_file, $patch_file, $string_match, 1, "a" );
+```
+
+``patch_from_file_array`` takes three modes: "p" (prepend), "a" (append), "r" (replace).
