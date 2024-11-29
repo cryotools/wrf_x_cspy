@@ -26,16 +26,20 @@ module load perl/5.36 perl-path-tiny perl-time-piece
 bash patch_wrfxcspy.sh --install-all -i ./foo/bar/
 ```
 
-2. Install WRF's dependencies and edit ``build_wrf.sh`` to point to the right paths for COSIPY_API, NETCDF, HDF5, and DIR. Make sure WRF's dependencies are correctly installed.
+2. Install WRF's dependencies and edit ``build_wrf.sh`` or ``build_wrf_full.sh`` to point to the right paths for COSIPY_API, COSIPY_DIR, NETCDF, HDF5, and DIR. Alternatively, you can load your own build file, and export COSIPY_API and COSIPY_DIR to your LD_LIBRARY_PATH.
 
-3. Load environment variables, configure and patch WRF:
+3. Load environment variables:
 ```console
-bash patch_wrfxcspy -e -c -p -i ./foo/bar/WRF/
+bash patch_wrfxcspy -e
+source build_wrf.sh  # if the previous command fails
 ```
 
-Depending on your system and access permissions, you may need to run ``build_wrf.sh`` separately.
+4. Configure and patch WRF:
+```console
+bash patch_wrfxcspy -c -p -i ./foo/bar/WRF/
+```
 
-4. Build WRF: ``./compile em_real >& log.compile``
+5. Build WRF: ``./compile em_real >& log.compile``
 
 **Arguments:**
 
