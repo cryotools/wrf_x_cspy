@@ -13,7 +13,8 @@ module load user-spack
 module load time
 
 # Coupler
-export COSIPY_API="${USER_PATH}/WRF/COUPLER"
+export COSIPY_API="${USER_PATH}/path/to/WRF/COUPLER"
+export COSIPY_DIR="${USER_PATH}/path/to/WRF/cosipy"
 export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${COSIPY_API}
 export LIBRARY_PATH=${LIBRARY_PATH}:${COSIPY_API}
 export PATH=${PATH}:${COSIPY_API}
