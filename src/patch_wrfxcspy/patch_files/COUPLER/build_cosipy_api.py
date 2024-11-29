@@ -37,8 +37,9 @@ from cosipy_plugin import ffi
 
 #add cosipy and coupler to sys.path
 import sys
-sys.path.append("/home/titan/gwgk/gwgi18/PRIVATE/KONWIHR/WRF_COSIPY/COUPLER")
-sys.path.append("/home/titan/gwgk/gwgi18/PRIVATE/KONWIHR/WRF_COSIPY/cosipy")
+import os
+sys.path.append(os.environ.get("COSIPY_API"))
+sys.path.append(os.environ.get("COSIPY_DIR"))
 import call_cosipy_wrf as coupler
 
 
