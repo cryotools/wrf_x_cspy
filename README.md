@@ -11,6 +11,15 @@ Perl version 5.26.3 or greater must be installed on your system. Depending on yo
 * perl-time-piece
 * perl-path-tiny
 
+2. Install CFFI to build the coupler.
+
+If you are using conda/mamba to manage your environments, CFFI should already be installed.
+
+If you are using a pip venv:
+```console
+pip install cffi
+```
+
 For NHR@FAU users:
 
 ```console
@@ -21,25 +30,27 @@ module load perl/5.36 perl-path-tiny perl-time-piece
 
 ## Patching
 
-1. Download WRF, the NoahMP submodule, COSIPY, and the coupler:
+1. Activate your preferred python environment, with CFFI installed.
+
+2. Download WRF, the NoahMP submodule, COSIPY, and the coupler:
 ```console
 bash patch_wrfxcspy.sh --install-all -i ./foo/bar/
 ```
 
-2. Install WRF's dependencies and edit ``build_wrf.sh`` or ``build_wrf_full.sh`` to point to the right paths for COSIPY_API, COSIPY_DIR, NETCDF, HDF5, and DIR. Alternatively, you can load your own build file, and export COSIPY_API and COSIPY_DIR to your LD_LIBRARY_PATH.
+3. Install WRF's dependencies and edit ``build_wrf.sh`` or ``build_wrf_full.sh`` to point to the right paths for COSIPY_API, COSIPY_DIR, NETCDF, HDF5, and DIR. Alternatively, you can load your own build file, and export COSIPY_API and COSIPY_DIR to your LD_LIBRARY_PATH.
 
-3. Load environment variables:
+4. Load environment variables:
 ```console
 bash patch_wrfxcspy -e
 source build_wrf.sh  # if the previous command fails
 ```
 
-4. Configure and patch WRF:
+5. Configure and patch WRF:
 ```console
 bash patch_wrfxcspy -c -p -i ./foo/bar/WRF/
 ```
 
-5. Build WRF: ``./compile em_real >& log.compile``
+6. Build WRF: ``./compile em_real >& log.compile``
 
 **Arguments:**
 
