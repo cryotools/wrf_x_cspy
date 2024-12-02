@@ -144,8 +144,12 @@ fi
 
 if [[ $INSTALL_COUPLER -eq 1 ]]; then
     log "Install coupler"
-    mkdir -p "${INPUT}/COUPLER/"
-    cp -r "${PWD}/patch_files/COUPLER/" "${INPUT}/COUPLER/"
+    # mkdir -p "${INPUT}/COUPLER/"
+    cp -RT "${PWD}/patch_files/COUPLER/" "${INPUT}/COUPLER/"
+    current_dir=${PWD}
+    cd "${INPUT}/COUPLER/" || exit
+    python build_cosipy_api.py || exit
+    cd "${current_dir}" || exit
 fi
 
 # Paths must be edited by user
