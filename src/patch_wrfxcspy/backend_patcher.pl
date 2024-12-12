@@ -289,7 +289,7 @@ sub patch_from_file_array {
             regex_append_to_line( $match_string, $patch_text );
         }
         elsif ( $mode eq "r" ) {
-            regex_replace_line( $match_string, $new_text );
+            regex_replace_line( $match_string, $patch_text );
         }
         else {
             die "Mode $! not supported.";
