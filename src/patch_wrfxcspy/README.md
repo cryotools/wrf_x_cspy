@@ -49,7 +49,7 @@ Alternatively, you can load your own build file, and export COSIPY_API and COSIP
 ```
 
 **Note that environment variables loaded by the ``-e, --env`` flag`` are not exported to your current shell.**
-You can source your own build file using ``source /path/to/build_wrf.sh``.
+You can source your own build file using ``source /path/to/build_wrf.sh`` and omit the ``-e, --env`` flag.
 
 6. Build WRF: 
 
