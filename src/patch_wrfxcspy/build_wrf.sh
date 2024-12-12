@@ -5,6 +5,7 @@
 
 # Load HPC modules
 module purge
+module load perl/5.36 perl-time-piece perl-path-tiny
 module load intelmpi/2021.6.0 intel/2021.4.0
 module load user-spack
 module load time
