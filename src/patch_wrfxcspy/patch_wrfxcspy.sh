@@ -155,7 +155,7 @@ fi
 # Paths must be edited by user
 if [[ $ENVIRONMENT -eq 1 ]]; then
     log "Load environment variables"
-    source build_wrf.sh
+    . build_wrf.sh
 fi
 
 # Clean make files

@@ -1,15 +1,24 @@
 # WRFxCSPY
 
-All-in-one coupler for [COSIPY](https://cosipy.readthedocs.io) and WRF.
+All-in-one coupler for [COSIPY](https://cosipy.readthedocs.io) and [WRF](https://github.com/wrf-model/WRF).
 
 ## Pre-requisites
 
 1. Install patcher dependencies.
 
-Perl version 5.26.3 or greater must be installed on your system. Depending on your distribution, you may also need to install the following:
+Perl version 5.26.3 or greater must be installed on your system.
+Depending on your distribution, you may also need to install the following:
 
 * perl-time-piece
 * perl-path-tiny
+
+If you are using spack, this might look something like this:
+
+```console
+spack install perl@5.36.0 %gcc@8.5.0
+spack install perl-path-tiny perl-time-piece %gcc@8.5.0 ^perl@5.36.0
+module load perl/5.36 perl-path-tiny perl-time-piece
+```
 
 2. Install CFFI to build the coupler.
 
@@ -20,37 +29,34 @@ If you are using a pip venv:
 pip install cffi
 ```
 
-For NHR@FAU users:
-
-```console
-spack install perl@5.36.0 %gcc@8.5.0
-spack install perl-path-tiny perl-time-piece %gcc@8.5.0 ^perl@5.36.0
-module load perl/5.36 perl-path-tiny perl-time-piece
-```
-
 ## Patching
 
 1. Activate your preferred python environment, with CFFI installed.
 
 2. Download WRF, the NoahMP submodule, COSIPY, and the coupler:
 ```console
-bash patch_wrfxcspy.sh --install-all -i ./foo/bar/
+./patch_wrfxcspy.sh --install-all -i ./foo/bar/
 ```
 
-3. Install WRF's dependencies and edit ``build_wrf.sh`` or ``build_wrf_full.sh`` to point to the right paths for COSIPY_API, COSIPY_DIR, NETCDF, HDF5, and DIR. Alternatively, you can load your own build file, and export COSIPY_API and COSIPY_DIR to your LD_LIBRARY_PATH.
+3. Install WRF's dependencies and edit ``build_wrf.sh`` or ``build_wrf_full.sh`` to point to the right paths for COSIPY_API, COSIPY_DIR, NETCDF, HDF5, and DIR.
+Alternatively, you can load your own build file, and export COSIPY_API and COSIPY_DIR to your LD_LIBRARY_PATH.
 
-4. Load environment variables:
-```console
-bash patch_wrfxcspy -e
-source build_wrf.sh  # if the previous command fails
-```
+4. Edit the template file ``build_wrf.sh`` to load your preferred environment variables.
 
 5. Configure and patch WRF:
 ```console
-bash patch_wrfxcspy -c -p -i ./foo/bar/WRF/
+./patch_wrfxcspy -e -c -p -i ./foo/bar/WRF/
 ```
 
-6. Build WRF: ``./compile em_real >& log.compile``
+**Note that environment variables loaded by the ``-e, --env`` flag`` are not exported to your current shell.**
+You can source your own build file using ``source /path/to/build_wrf.sh``.
+
+6. Build WRF: 
+
+```console
+source build_wrf.sh  # or to your preferred build file.
+./compile em_real >& log.compile
+```
 
 **Arguments:**
 
