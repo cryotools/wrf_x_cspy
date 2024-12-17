@@ -38,24 +38,28 @@ pip install cffi
 ./patch_wrfxcspy.sh --install-all -i ./foo/bar/
 ```
 
-3. Install WRF's dependencies and edit ``build_wrf.sh`` or ``build_wrf_full.sh`` to point to the right paths for COSIPY_API, COSIPY_DIR, NETCDF, HDF5, and DIR.
-Alternatively, you can load your own build file, and export COSIPY_API and COSIPY_DIR to your LD_LIBRARY_PATH.
+3. Install WRF's dependencies.
 
-4. Edit the template file ``build_wrf.sh`` to load your preferred environment variables.
+4. Edit ``build_wrf.sh`` or ``build_wrf_full.sh`` to point to the right paths for COSIPY_API, COSIPY_DIR, NETCDF, HDF5, and JASPER_DIR.
+**Note that environment variables loaded by the ``-e, --env`` flag`` are not exported to your current shell.**
+
+Alternatively, you can load your own build file using ``source /path/to/build_wrf.sh``, and export COSIPY_API and COSIPY_DIR to your LD_LIBRARY_PATH.
+Do this now and omit the ``-e, --env`` flag from subsequent commands.
 
 5. Configure and patch WRF:
 ```console
 ./patch_wrfxcspy -e -c -p -i ./foo/bar/WRF/
 ```
 
-**Note that environment variables loaded by the ``-e, --env`` flag`` are not exported to your current shell.**
-You can source your own build file using ``source /path/to/build_wrf.sh`` and omit the ``-e, --env`` flag.
-
 6. Build WRF: 
 
 ```console
-source build_wrf.sh  # or to your preferred build file.
+# If using your own build file
+source /path/to/build_wrf.sh
 ./compile em_real >& log.compile
+
+# If using the supplied build_wrf.sh
+./patch_wrfxcspy -e -i ./foo/bar/WRF/ -b "em_real"
 ```
 
 **Arguments:**
