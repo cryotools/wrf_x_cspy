@@ -20,12 +20,12 @@ DisplayHelp() {
     example_command="\$ bash ./patch_wrfxcspy.sh -e -c -p -i '/foo/bar/'"
     options="OPTIONS
     -i, --input <file>      Source WRF directory, relative to current working directory.
-    --install-all           Download WRF, NoahMP submodule, COSIPY, and the WRFxCSPY coupler. This will not build WRF for you.
-    --install-wrf           Download only WRF and NoahMP drivers. This will not build WRF for you.
+    --install-all           Download WRF, NoahMP submodule, COSIPY, and the WRFxCSPY coupler. Does not build WRF.
+    --install-wrf           Download only WRF and the NoahMP submodule. Does not build WRF.
     --install-cosipy        Download only COSIPY.
-    --install-coupler       Install only the coupler code.
+    --install-coupler       Download and build only the coupler code.
     --wrf-branch <str>      Name of WRF branch on GitHub. Defaults to 'release-v4.6.1'.
-    -c, --configure         Create new WRF configuration script.
+    -c, --configure         Create and patch WRF configuration script.
     -d, --delete            Run make clean in source directory.
     -p, --patch             Patch COSIPY into WRF.
     -e, --env               Load environment variables.
@@ -161,7 +161,7 @@ fi
 
 # Paths must be edited by user
 if [[ $ENVIRONMENT -eq 1 ]]; then
-    log "Load environment variables"
+    log "Load environment variables (not exported to your current shell)"
     . build_wrf.sh
 fi
 

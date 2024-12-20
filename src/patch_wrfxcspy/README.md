@@ -33,17 +33,17 @@ pip install cffi
 
 1. Activate your preferred python environment, with CFFI installed.
 
-2. Use the script to download WRF, the NoahMP submodule, COSIPY, and the coupler:
+2. Install WRF's dependencies.
+
+3. Use the script to download WRF, the NoahMP submodule, COSIPY, and the coupler:
 ```console
-./patch_wrfxcspy.sh --install-all -i <desired path to coupled model>
+./patch_wrfxcspy.sh --install-all -i ./desired/path/to/installation/folder/
 ```
 
-3. Install WRF's dependencies.
-
-4. Edit ``build_wrf.sh`` or ``build_wrf_full.sh`` to point to the right paths for COSIPY_API, COSIPY_DIR, NETCDF, HDF5, and JASPER_DIR.
+4. Edit ``build_wrf.sh`` to point to the right paths for ``COSIPY_API``, ``COSIPY_DIR``, ``NETCDF``, ``HDF5``, and ``JASPER_DIR``.
 **Note that environment variables loaded by the ``-e, --env`` flag`` are not exported to your current shell.**
 
-Alternatively, you can load your own build file using ``source /path/to/build_wrf.sh``, and export COSIPY_API and COSIPY_DIR to your LD_LIBRARY_PATH.
+Alternatively, you can load your own build file using ``source /path/to/build_wrf.sh``, and export ``COSIPY_API`` and ``COSIPY_DIR`` to your ``LD_LIBRARY_PATH``.
 Do this now and omit the ``-e, --env`` flag from subsequent commands.
 
 5. Configure and patch WRF:
@@ -54,25 +54,25 @@ Do this now and omit the ``-e, --env`` flag from subsequent commands.
 6. Build WRF: 
 
 ```console
+# If using the supplied build_wrf.sh
+./patch_wrfxcspy -e -i ./path/to/WRF/ -b "em_real"
+
 # If using your own build file
 cd /path/to/wrf
 source /path/to/build_wrf.sh
 ./compile em_real >& log.compile
-
-# If using the supplied build_wrf.sh
-./patch_wrfxcspy -e -i ./path/to/WRF/ -b "em_real"
 ```
 
 **Arguments:**
 
 ```properties
 -i, --input <file>  Source WRF directory, relative to current working directory.
---install-all       Download WRF, NoahMP submodule, COSIPY, and the WRFxCSPY coupler. This will not build WRF for you.
---install-wrf       Download only WRF and NoahMP drivers. This will not build WRF for you.
+--install-all       Download WRF, NoahMP submodule, COSIPY, and the WRFxCSPY coupler. Does not build WRF.
+--install-wrf       Download only WRF and NoahMP drivers. Does not build WRF.
 --install-cosipy    Download only COSIPY.
---install-coupler   Install only the coupler code.
+--install-coupler   Download and build only the coupler code.
 --wrf-branch <str>  Name of WRF branch on GitHub. Defaults to 'release-v4.6.1'.
--c, --configure     Create new WRF configuration script.
+-c, --configure     Create and patch WRF configuration script.
 -p, --patch         Patch COSIPY into WRF.
 -e, --env           Load environment variables.
 -v, --verbose       Prints log messages to stderr.
