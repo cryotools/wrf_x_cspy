@@ -58,7 +58,7 @@ Do this now and omit the ``-e, --env`` flag from subsequent commands.
 ./patch_wrfxcspy -e -i ./path/to/WRF/ -b "em_real"
 
 # If using your own build file
-cd /path/to/wrf
+cd /path/to/WRF/
 source /path/to/build_wrf.sh
 ./compile em_real >& log.compile
 ```
