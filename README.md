@@ -33,9 +33,9 @@ pip install cffi
 
 1. Activate your preferred python environment, with CFFI installed.
 
-2. Download WRF, the NoahMP submodule, COSIPY, and the coupler:
+2. Use the script to download WRF, the NoahMP submodule, COSIPY, and the coupler:
 ```console
-./patch_wrfxcspy.sh --install-all -i ./foo/bar/
+./patch_wrfxcspy.sh --install-all -i <desired path to coupled model>
 ```
 
 3. Install WRF's dependencies.
@@ -48,7 +48,7 @@ Do this now and omit the ``-e, --env`` flag from subsequent commands.
 
 5. Configure and patch WRF:
 ```console
-./patch_wrfxcspy -e -c -p -i ./foo/bar/WRF/
+./patch_wrfxcspy -e -c -p -i ./path/to/WRF/
 ```
 
 6. Build WRF: 
@@ -59,7 +59,7 @@ source /path/to/build_wrf.sh
 ./compile em_real >& log.compile
 
 # If using the supplied build_wrf.sh
-./patch_wrfxcspy -e -i ./foo/bar/WRF/ -b "em_real"
+./patch_wrfxcspy -e -i ./path/to/WRF/ -b "em_real"
 ```
 
 **Arguments:**
