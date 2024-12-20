@@ -11,6 +11,7 @@ WRF_BRANCH="release-v4.6.1"
 DELETE=0
 ENVIRONMENT=0
 PATCH=0
+BUILD_WRF=""
 VERBOSE=0
 
 DisplayHelp() {
@@ -19,15 +20,16 @@ DisplayHelp() {
     example_command="\$ bash ./patch_wrfxcspy.sh -e -c -p -i '/foo/bar/'"
     options="OPTIONS
     -i, --input <file>      Source WRF directory, relative to current working directory.
-    --install-all           Download WRF, NoahMP submodule, COSIPY, and the WRFxCSPY coupler. This will not build WRF for you.
-    --install-wrf           Download only WRF and NoahMP drivers. This will not build WRF for you.
+    --install-all           Download WRF, NoahMP submodule, COSIPY, and the WRFxCSPY coupler. Does not build WRF.
+    --install-wrf           Download only WRF and the NoahMP submodule. Does not build WRF.
     --install-cosipy        Download only COSIPY.
-    --install-coupler       Install only the coupler code.
+    --install-coupler       Download and build only the coupler code.
     --wrf-branch <str>      Name of WRF branch on GitHub. Defaults to 'release-v4.6.1'.
-    -c, --configure         Create new WRF configuration script.
+    -c, --configure         Create and patch WRF configuration script.
     -d, --delete            Run make clean in source directory.
     -p, --patch             Patch COSIPY into WRF.
     -e, --env               Load environment variables.
+    -b, --build <case>      Compile WRF case.
     -v, --verbose           Prints log messages to stderr.
     "
     printf "\n%s\n\n%s\n%s\n\n%s\n" "$intro_tag" "$blurb" "$example_command" "$options"
@@ -46,7 +48,7 @@ log() {
 }
 
 # Argument parsing
-ARGS=$(getopt -o 'hi:cdpev' --long 'help,input:,clean,delete,patch,env,verbose,install-all,install-wrf,install-cosipy,install-coupler,wrf-branch:' -- "$@") || exit
+ARGS=$(getopt -o 'hi:cdpeb:v' --long 'help,input:,clean,delete,patch,env,build:,verbose,install-all,install-wrf,install-cosipy,install-coupler,wrf-branch:' -- "$@") || exit
 eval "set -- $ARGS"
 while true; do
     case $1 in
@@ -72,6 +74,10 @@ while true; do
         ;;
     -e | --env)
         ENVIRONMENT=1
+        shift
+        ;;
+    -b | --build)
+        BUILD_WRF=1
         shift
         ;;
     -v | --verbose)
@@ -112,6 +118,7 @@ if [ -z "${INPUT}" ]; then
     INPUT="${PWD}/${INPUT}"
 fi
 log "WRF directory: ${INPUT}"
+current_dir=${PWD}
 
 if [[ $INSTALL_ALL -eq 1 ]]; then
     INSTALL_WRF=1
@@ -154,8 +161,8 @@ fi
 
 # Paths must be edited by user
 if [[ $ENVIRONMENT -eq 1 ]]; then
-    log "Load environment variables"
-    source build_wrf.sh
+    log "Load environment variables (not exported to your current shell)"
+    . build_wrf.sh
 fi
 
 # Clean make files
@@ -167,7 +174,6 @@ fi
 # Run WRF configuration
 if [[ $CONFIGURE -eq 1 ]]; then
     log "Run WRF configuration"
-    current_dir=${PWD}
     cd "${INPUT}" || exit
     ./configure
     cd "${current_dir}" || exit
@@ -188,4 +194,12 @@ fi
 if [[ $PATCH -eq 1 ]]; then
     log "Patching WRF_X_CSPY..."
     perl backend_patcher.pl --input "${INPUT}"
+fi
+
+if [[ $BUILD_WRF ]]; then
+    log "Building WRF..."
+    date=$(date +%Y%m%d_%H00)
+    cd "${INPUT}" || exit
+    ./compile "${BUILD_WRF}" >&log.compile_"${date}"
+    cd "${current_dir}" || exit
 fi

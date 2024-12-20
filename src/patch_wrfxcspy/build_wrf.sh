@@ -1,19 +1,24 @@
 #!/bin/bash -l
 # Copyright 2024 WRFxCSPY Contributors
 
-# Ensure COSIPY_API, NETCDF, HDF5, and DIR point to the correct paths.
-
-USER_PATH="/home/atuin/<group>/<account>/software"
+# Ensure COSIPY_API, NETCDF, HDF5, and JASPER_ROOT point to the correct paths.
 
 # Load HPC modules
 module purge
-module load intelmpi/2021.6.0 intel/2021.4.0
 module load user-spack
+module load intelmpi/2021.6.0 intel/2021.4.0
+module load perl-time-piece perl-path-tiny
+module load jasper
 module load time
 
+# Set library paths here
+export COSIPY_API="/path/to/WRF/COUPLER"
+export COSIPY_DIR="/path/to/WRF/cosipy"
+export NETCDF="/path/to/netcdf"
+export HDF5="/path/to/hdf5"
+# export JASPER_ROOT="/path/to/jasper"
+
 # Coupler
-export COSIPY_API="${USER_PATH}/path/to/WRF/COUPLER"
-export COSIPY_DIR="${USER_PATH}/path/to/WRF/cosipy"
 export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${COSIPY_API}
 
 # WRF options
@@ -23,21 +28,17 @@ export WRF_NMM_CORE=0
 export WRF_CHEM=0
 
 # NetCDF
-export NETCDF="${USER_PATH}/path/to/netcdf"
 export NETCDF_LIB="-L${NETCDF}/lib -lnetcdf -lnetcdff -Wl,-rpath,${NETCDF}/lib"
 export NETCDF_INC="-I${NETCDF_C_ROOT}/include"
 export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${NETCDF}/lib
 
 # NetCDF options
-export NETCDF_ROOT=$NETCDF
-export NETCDF_classic=1
+export NETCDF_classic=0
 export NETCDF4=1
 
 # HDF5
-export HDF5="${USER_PATH}/path/to/hdf5"
 export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${HDF5}/lib
 
 # Libraries
-export DIR="${USER_PATH}/WRF/Build_WRF/LIBRARIES"
-export JASPERLIB=${DIR}/grib2/lib
-export JASPERINC=${DIR}/grib2/include
+export JASPERLIB=${JASPER_DIR}/lib
+export JASPERINC=${JASPER_DIR}/include
