@@ -77,8 +77,8 @@ while true; do
         shift
         ;;
     -b | --build)
-        BUILD_WRF=1
-        shift
+        BUILD_WRF=$2
+        shift 2
         ;;
     -v | --verbose)
         ((VERBOSE++))
